@@ -1,0 +1,23 @@
+{
+  "name": "require-context-hmr",
+  "version": "0.1.0",
+  "description": "Utility to apply hot reloading to modules loaded with Webpack's require.context",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadamwhite/require-context-hmr.git"
+  },
+  "keywords": [
+    "webpack",
+    "hmr"
+  ],
+  "author": "K Adam White",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kadamwhite/require-context-hmr/issues"
+  },
+  "homepage": "https://github.com/kadamwhite/require-context-hmr#readme"
+}
