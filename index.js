@@ -1,4 +1,9 @@
 /**
+ * No-op function for use as a default argument value.
+ */
+const noop = () => {};
+
+/**
  * Require a set of modules and configure them for hot module replacement.
  *
  * The first argument should be a function returning a `require.context()`
@@ -17,14 +22,15 @@ const autoload = ( {
 	getContext,
 	register,
 	unregister,
-	before = () => {},
-	after = () => {},
+	before = noop,
+	after = noop,
 } ) => {
 	const cache = {};
 	const loadModules = () => {
 		before();
 
 		const context = getContext();
+		const changed = [];
 		context.keys().forEach( key => {
 			const module = context( key );
 			if ( module === cache[ key ] ) {
@@ -37,10 +43,11 @@ const autoload = ( {
 			}
 			// Register new module and update cache.
 			register( module );
+			changed.push( module );
 			cache[ key ] = module;
 		} );
 
-		after();
+		after( changed );
 
 		// Return the context for HMR initialization.
 		return context;
@@ -53,6 +60,4 @@ const autoload = ( {
 	}
 };
 
-module.exports = {
-  autoload,
-};
+module.exports = autoload;
