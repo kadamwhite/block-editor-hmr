@@ -1,6 +1,6 @@
 {
   "name": "require-context-hmr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Utility to apply hot reloading to modules loaded with Webpack's require.context",
   "main": "index.js",
   "scripts": {
