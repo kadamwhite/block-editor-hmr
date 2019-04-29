@@ -2,7 +2,7 @@
   "name": "block-editor-hmr",
   "version": "0.3.1",
   "description": "Utilities to autoload and hot-reload WordPress Block Editor modules.",
-  "main": "index.js",
+  "main": "build.js",
   "homepage": "https://github.com/kadamwhite/block-editor-hmr#readme",
   "repository": {
     "type": "git",
