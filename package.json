@@ -3,9 +3,7 @@
   "version": "0.3.1",
   "description": "Utilities to autoload and hot-reload WordPress Block Editor modules.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "homepage": "https://github.com/kadamwhite/block-editor-hmr#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kadamwhite/block-editor-hmr.git"
@@ -19,9 +17,20 @@
   "bugs": {
     "url": "https://github.com/kadamwhite/block-editor-hmr/issues"
   },
-  "homepage": "https://github.com/kadamwhite/block-editor-hmr#readme",
+  "browserslist": [
+    ">1%",
+    "last 4 versions",
+    "Firefox ESR",
+    "not ie < 10"
+  ],
+  "scripts": {
+    "build": "babel index.js --out-file build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
-    "@babel/preset-env": "^7.4.4"
+    "@babel/preset-env": "^7.4.4",
+    "core-js": "^2.6.5"
   }
 }
