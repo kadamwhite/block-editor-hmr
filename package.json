@@ -1,6 +1,6 @@
 {
   "name": "block-editor-hmr",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Utilities to autoload and hot-reload WordPress Block Editor modules.",
   "main": "index.js",
   "scripts": {
