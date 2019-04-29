@@ -157,17 +157,29 @@ export const afterUpdateBlocks = ( changed = [] ) => {
 /**
  * Register a new or updated plugin.
  */
-export const registerPlugin = ( { name, options, filters, styles } ) => {
+export const registerPlugin = ( { name, options, filters } ) => {
 	if ( name && options ) {
 		plugins.registerPlugin( name, options );
+	}
+
+	if ( filters && Array.isArray( filters ) ) {
+		filters.forEach( ( { hook, namespace } ) => {
+			hooks.removeFilter( hook, namespace );
+		} );
 	}
 };
 
 /**
  * Unregister an updated or removed plugin.
  */
-export const unregisterPlugin = ( { name, options, filters, styles } ) => {
+export const unregisterPlugin = ( { name, options, filters } ) => {
 	if ( name && options ) {
 		plugins.unregisterPlugin( name );
+	}
+
+	if ( filters && Array.isArray( filters ) ) {
+		filters.forEach( ( { hook, namespace } ) => {
+			hooks.removeFilter( hook, namespace );
+		} );
 	}
 };
