@@ -28,8 +28,8 @@ const noop = () => {};
  * @param {Function} options.getContext Execute and return a `require.context()` call.
  * @param {Function} options.register   Function to register accepted modules.
  * @param {Function} options.unregister Function to unregister replaced modules.
- * @param {Function} options.[before]   Function to run before updating moules.
- * @param {Function} options.[after]    Function to run after updating moules.
+ * @param {Function} options.[before]   Function to run before updating modules.
+ * @param {Function} options.[after]    Function to run after updating modules.
  * @param {Function} [callback]         A callback function which will be passed the
  *                                      generated `context` object and `loadModules`
  *                                      function, which can be used to opt-in to HMR.
@@ -155,6 +155,43 @@ export const afterUpdateBlocks = ( changed = [] ) => {
 };
 
 /**
+ * Require a set of blocks and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted blocks.
+ * @param {Function} options.[unregister] Function to unregister replaced blocks.
+ * @param {Function} options.[before]     Function to run before updating blocks.
+ * @param {Function} options.[after]      Function to run after updating blocks.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
+ */
+export const autoloadBlocks = (
+	{
+		getContext,
+		register = registerBlock,
+		unregister = unregisterBlock,
+		before = beforeUpdateBlocks,
+		after = afterUpdateBlocks,
+	},
+	callback
+) => {
+	autoload(
+		{
+			getContext,
+			register,
+			unregister,
+			before,
+			after,
+		},
+		callback
+	);
+};
+
+/**
  * Register a new or updated plugin.
  */
 export const registerPlugin = ( { name, options, filters } ) => {
@@ -182,4 +219,41 @@ export const unregisterPlugin = ( { name, options, filters } ) => {
 			hooks.removeFilter( hook, namespace );
 		} );
 	}
+};
+
+/**
+ * Require a set of plugins and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted plugins.
+ * @param {Function} options.[unregister] Function to unregister replaced plugins.
+ * @param {Function} options.[before]     Function to run before updating plugins.
+ * @param {Function} options.[after]      Function to run after updating plugins.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
+ */
+export const autoloadPlugins = (
+	{
+		getContext,
+		register = registerPlugin,
+		unregister = unregisterPlugin,
+		before,
+		after,
+	},
+	callback
+) => {
+	autoload(
+		{
+			getContext,
+			register,
+			unregister,
+			before,
+			after,
+		},
+		callback
+	);
 };
