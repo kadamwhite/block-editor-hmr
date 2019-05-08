@@ -39,26 +39,15 @@ then you can put this code in `blocks.js` to automatically load and configure ev
  * blocks.js:
  * Dynamically locate, load & register all Gutenberg blocks.
  */
-import {
-	autoload,
-	registerBlock,
-	unregisterBlock,
-	beforeUpdateBlocks,
-	afterUpdateBlocks,
-} from 'block-editor-hmr';
+import { autoloadBlocks } from 'block-editor-hmr';
 
 // Load all block index files.
-autoload(
+autoloadBlocks(
 	{
 		/**
 		 * Return a project-specific require.context.
 		 */
 		getContext: () => require.context( './blocks', true, /index\.js$/ ),
-
-		register: registerBlock,
-		unregister: unregisterBlock,
-		before: beforeUpdateBlocks,
-		after: afterUpdateBlocks,
 	},
 	( context, loadModules ) => {
 		if ( module.hot ) {
@@ -78,22 +67,15 @@ The same logic applies if you want to register block editor plugins: export a `n
  * plugins.js:
  * Dynamically locate, load & register all Gutenberg plugins.
  */
-import {
-	autoload,
-	registerPlugin,
-	unregisterPlugin,
-} from 'block-editor-hmr';
+import { autoloadPlugins } from 'block-editor-hmr';
 
 // Load all plugin index files.
-autoload(
+autoloadPlugins(
 	{
 		/**
 		 * Return a project-specific require.context.
 		 */
 		getContext: () => require.context( './plugins', true, /index\.js$/ ),
-
-		register: registerPlugin,
-		unregister: unregisterPlugin,
 	},
 	( context, loadModules ) => {
 		if ( module.hot ) {
@@ -102,6 +84,26 @@ autoload(
 	}
 );
 ```
+
+## Need More Control?
+
+In case you need more control over things, the library also exports a generic `autoload` function, as well as any block- or plugin-specific function that is used as a default value.
+
+```
+import {
+	autoload,
+
+	registerBlock,
+	unregisterBlock,
+	beforeUpdateBlocks,
+	afterUpdateBlocks,
+
+	registerPlugin,
+	unregisterPlugin,
+} from 'block-editor-hmr';
+```
+
+This means you can either pass select custom values to `autoloadBlocks` and `autoloadPlugins`, or roll your own autoloader via a fully custom `autoload`.  
 
 ## Script Dependencies
 
