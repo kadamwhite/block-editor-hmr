@@ -17,12 +17,12 @@ src
 │       └── index.js
 └── blocks.js
 ```
-and that your block files export at minimum a `name` string and `options` object:
+and that your block files export at minimum a `name` string and `settings` object:
 
 ```js
 export const name = 'myplugin/block-a';
 
-export const options = {
+export const settings = {
 	title: 'Block A',
 
 	description: 'An excellent example block',
@@ -60,7 +60,7 @@ autoloadBlocks(
 
 ## Block Editor Plugins
 
-The same logic applies if you want to register block editor plugins: export a `name` and `options` from each plugin module, then use the provided `registerPlugin` and `unregisterPlugin` methods within your plugins entrypoint file.
+The same logic applies if you want to register block editor plugins: export a `name` and `settings` from each plugin module, then use the provided `registerPlugin` and `unregisterPlugin` methods within your plugins entrypoint file.
 
 ```js
 /**
@@ -103,7 +103,7 @@ import {
 } from 'block-editor-hmr';
 ```
 
-This means you can either pass select custom values to `autoloadBlocks` and `autoloadPlugins`, or roll your own autoloader via a fully custom `autoload`.  
+This means you can either pass select custom values to `autoloadBlocks` and `autoloadPlugins`, or roll your own autoloader via a fully custom `autoload`.
 
 ## Script Dependencies
 
