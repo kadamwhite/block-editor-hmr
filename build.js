@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.unregisterPlugin = exports.registerPlugin = exports.afterUpdateBlocks = exports.beforeUpdateBlocks = exports.unregisterBlock = exports.registerBlock = exports.autoload = void 0;
+exports.autoloadPlugins = exports.unregisterPlugin = exports.registerPlugin = exports.autoloadBlocks = exports.afterUpdateBlocks = exports.beforeUpdateBlocks = exports.unregisterBlock = exports.registerBlock = exports.autoload = void 0;
 
 /**
  * Provide helper methods to dynamically locate, load & register Blocks & Plugins.
@@ -33,8 +33,8 @@ var noop = function noop() {};
  * @param {Function} options.getContext Execute and return a `require.context()` call.
  * @param {Function} options.register   Function to register accepted modules.
  * @param {Function} options.unregister Function to unregister replaced modules.
- * @param {Function} options.[before]   Function to run before updating moules.
- * @param {Function} options.[after]    Function to run after updating moules.
+ * @param {Function} options.[before]   Function to run before updating modules.
+ * @param {Function} options.[after]    Function to run after updating modules.
  * @param {Function} [callback]         A callback function which will be passed the
  *                                      generated `context` object and `loadModules`
  *                                      function, which can be used to opt-in to HMR.
@@ -88,16 +88,22 @@ exports.autoload = autoload;
 var selectedBlockId = null;
 /**
  * Register a new or updated block.
+ *
+ * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name.
+ * @param {Object}   block.settings   Block configuration object.
+ * @param {Object[]} [block.filters]  Optional array of filters to bind.
+ * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
 
 var registerBlock = function registerBlock(_ref2) {
   var name = _ref2.name,
-      options = _ref2.options,
+      settings = _ref2.settings,
       filters = _ref2.filters,
       styles = _ref2.styles;
 
-  if (name && options) {
-    blocks.registerBlockType(name, options);
+  if (name && settings) {
+    blocks.registerBlockType(name, settings);
   }
 
   if (filters && Array.isArray(filters)) {
@@ -117,6 +123,12 @@ var registerBlock = function registerBlock(_ref2) {
 };
 /**
  * Unregister an updated or removed block.
+ *
+ * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name.
+ * @param {Object}   block.settings   Block configuration object.
+ * @param {Object[]} [block.filters]  Optional array of filters to bind.
+ * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
 
 
@@ -124,11 +136,11 @@ exports.registerBlock = registerBlock;
 
 var unregisterBlock = function unregisterBlock(_ref4) {
   var name = _ref4.name,
-      options = _ref4.options,
+      settings = _ref4.settings,
       filters = _ref4.filters,
       styles = _ref4.styles;
 
-  if (name && options) {
+  if (name && settings) {
     blocks.unregisterBlockType(name);
   }
 
@@ -195,52 +207,134 @@ var afterUpdateBlocks = function afterUpdateBlocks() {
   selectedBlockId = null;
 };
 /**
- * Register a new or updated plugin.
+ * Require a set of blocks and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted blocks.
+ * @param {Function} options.[unregister] Function to unregister replaced blocks.
+ * @param {Function} options.[before]     Function to run before updating blocks.
+ * @param {Function} options.[after]      Function to run after updating blocks.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
  */
 
 
 exports.afterUpdateBlocks = afterUpdateBlocks;
 
-var registerPlugin = function registerPlugin(_ref7) {
-  var name = _ref7.name,
-      options = _ref7.options,
-      filters = _ref7.filters;
+var autoloadBlocks = function autoloadBlocks(_ref7, callback) {
+  var getContext = _ref7.getContext,
+      _ref7$register = _ref7.register,
+      register = _ref7$register === void 0 ? registerBlock : _ref7$register,
+      _ref7$unregister = _ref7.unregister,
+      unregister = _ref7$unregister === void 0 ? unregisterBlock : _ref7$unregister,
+      _ref7$before = _ref7.before,
+      before = _ref7$before === void 0 ? beforeUpdateBlocks : _ref7$before,
+      _ref7$after = _ref7.after,
+      after = _ref7$after === void 0 ? afterUpdateBlocks : _ref7$after;
+  autoload({
+    getContext: getContext,
+    register: register,
+    unregister: unregister,
+    before: before,
+    after: after
+  }, callback);
+};
+/**
+ * Register a new or updated plugin.
+ *
+ * @param {Object}   plugin           The exported plugin module.
+ * @param {String}   plugin.name      Plugin name.
+ * @param {Object}   plugin.settings  Plugin configuration object.
+ * @param {Object[]} [plugin.filters] Optional array of filters to bind.
+ */
 
-  if (name && options) {
-    plugins.registerPlugin(name, options);
+
+exports.autoloadBlocks = autoloadBlocks;
+
+var registerPlugin = function registerPlugin(_ref8) {
+  var name = _ref8.name,
+      settings = _ref8.settings,
+      filters = _ref8.filters;
+
+  if (name && settings) {
+    plugins.registerPlugin(name, settings);
   }
 
   if (filters && Array.isArray(filters)) {
-    filters.forEach(function (_ref8) {
-      var hook = _ref8.hook,
-          namespace = _ref8.namespace;
+    filters.forEach(function (_ref9) {
+      var hook = _ref9.hook,
+          namespace = _ref9.namespace;
       hooks.removeFilter(hook, namespace);
     });
   }
 };
 /**
  * Unregister an updated or removed plugin.
+ *
+ * @param {Object}   plugin           The exported plugin module.
+ * @param {String}   plugin.name      Plugin name.
+ * @param {Object}   plugin.settings  Plugin configuration object.
+ * @param {Object[]} [plugin.filters] Optional array of filters to bind.
  */
 
 
 exports.registerPlugin = registerPlugin;
 
-var unregisterPlugin = function unregisterPlugin(_ref9) {
-  var name = _ref9.name,
-      options = _ref9.options,
-      filters = _ref9.filters;
+var unregisterPlugin = function unregisterPlugin(_ref10) {
+  var name = _ref10.name,
+      settings = _ref10.settings,
+      filters = _ref10.filters;
 
-  if (name && options) {
+  if (name && settings) {
     plugins.unregisterPlugin(name);
   }
 
   if (filters && Array.isArray(filters)) {
-    filters.forEach(function (_ref10) {
-      var hook = _ref10.hook,
-          namespace = _ref10.namespace;
+    filters.forEach(function (_ref11) {
+      var hook = _ref11.hook,
+          namespace = _ref11.namespace;
       hooks.removeFilter(hook, namespace);
     });
   }
 };
+/**
+ * Require a set of plugins and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted plugins.
+ * @param {Function} options.[unregister] Function to unregister replaced plugins.
+ * @param {Function} options.[before]     Function to run before updating plugins.
+ * @param {Function} options.[after]      Function to run after updating plugins.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
+ */
+
 
 exports.unregisterPlugin = unregisterPlugin;
+
+var autoloadPlugins = function autoloadPlugins(_ref12, callback) {
+  var getContext = _ref12.getContext,
+      _ref12$register = _ref12.register,
+      register = _ref12$register === void 0 ? registerPlugin : _ref12$register,
+      _ref12$unregister = _ref12.unregister,
+      unregister = _ref12$unregister === void 0 ? unregisterPlugin : _ref12$unregister,
+      before = _ref12.before,
+      after = _ref12.after;
+  autoload({
+    getContext: getContext,
+    register: register,
+    unregister: unregister,
+    before: before,
+    after: after
+  }, callback);
+};
+
+exports.autoloadPlugins = autoloadPlugins;
