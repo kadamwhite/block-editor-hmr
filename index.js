@@ -82,10 +82,16 @@ let selectedBlockId = null;
 
 /**
  * Register a new or updated block.
+ *
+ * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name.
+ * @param {Object}   block.settings   Block configuration object.
+ * @param {Object[]} [block.filters]  Optional array of filters to bind.
+ * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
-export const registerBlock = ( { name, options, filters, styles } ) => {
-	if ( name && options ) {
-		blocks.registerBlockType( name, options );
+export const registerBlock = ( { name, settings, filters, styles } ) => {
+	if ( name && settings ) {
+		blocks.registerBlockType( name, settings );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
@@ -101,9 +107,15 @@ export const registerBlock = ( { name, options, filters, styles } ) => {
 
 /**
  * Unregister an updated or removed block.
+ *
+ * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name.
+ * @param {Object}   block.settings   Block configuration object.
+ * @param {Object[]} [block.filters]  Optional array of filters to bind.
+ * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
-export const unregisterBlock = ( { name, options, filters, styles } ) => {
-	if ( name && options ) {
+export const unregisterBlock = ( { name, settings, filters, styles } ) => {
+	if ( name && settings ) {
 		blocks.unregisterBlockType( name );
 	}
 
@@ -193,10 +205,15 @@ export const autoloadBlocks = (
 
 /**
  * Register a new or updated plugin.
+ *
+ * @param {Object}   plugin           The exported plugin module.
+ * @param {String}   plugin.name      Plugin name.
+ * @param {Object}   plugin.settings  Plugin configuration object.
+ * @param {Object[]} [plugin.filters] Optional array of filters to bind.
  */
-export const registerPlugin = ( { name, options, filters } ) => {
-	if ( name && options ) {
-		plugins.registerPlugin( name, options );
+export const registerPlugin = ( { name, settings, filters } ) => {
+	if ( name && settings ) {
+		plugins.registerPlugin( name, settings );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
@@ -208,9 +225,14 @@ export const registerPlugin = ( { name, options, filters } ) => {
 
 /**
  * Unregister an updated or removed plugin.
+ *
+ * @param {Object}   plugin           The exported plugin module.
+ * @param {String}   plugin.name      Plugin name.
+ * @param {Object}   plugin.settings  Plugin configuration object.
+ * @param {Object[]} [plugin.filters] Optional array of filters to bind.
  */
-export const unregisterPlugin = ( { name, options, filters } ) => {
-	if ( name && options ) {
+export const unregisterPlugin = ( { name, settings, filters } ) => {
+	if ( name && settings ) {
 		plugins.unregisterPlugin( name );
 	}
 
