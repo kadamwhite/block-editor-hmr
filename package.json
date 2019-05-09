@@ -1,6 +1,6 @@
 {
   "name": "block-editor-hmr",
-  "version": "0.4.0-beta.0",
+  "version": "0.4.0-beta.1",
   "description": "Utilities to autoload and hot-reload WordPress Block Editor modules.",
   "main": "build.js",
   "homepage": "https://github.com/kadamwhite/block-editor-hmr#readme",
@@ -24,6 +24,7 @@
     "not ie < 10"
   ],
   "scripts": {
+    "prepublish": "npm run build",
     "build": "babel index.js --out-file build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
