@@ -217,8 +217,8 @@ export const registerPlugin = ( { name, settings, filters } ) => {
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
-		filters.forEach( ( { hook, namespace } ) => {
-			hooks.removeFilter( hook, namespace );
+		filters.forEach( ( { hook, namespace, callback } ) => {
+			hooks.addFilter( hook, namespace, callback );
 		} );
 	}
 };
