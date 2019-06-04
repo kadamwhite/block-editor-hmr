@@ -4,6 +4,7 @@
 const {
 	blocks,
 	plugins,
+	richText,
 	hooks,
 	data,
 } = window.wp;
@@ -263,6 +264,69 @@ export const autoloadPlugins = (
 		getContext,
 		register = registerPlugin,
 		unregister = unregisterPlugin,
+		before,
+		after,
+	},
+	callback
+) => {
+	autoload(
+		{
+			getContext,
+			register,
+			unregister,
+			before,
+			after,
+		},
+		callback
+	);
+};
+
+/**
+ * Register a new or updated format type
+ *
+ * @param {Object}   format           The exported format module.
+ * @param {String}   format.name      Format type name.
+ * @param {Object}   format.settings  Format type configuration object.
+ */
+export const registerFormat = ( { name, settings } ) => {
+	if ( name && settings ) {
+		richText.registerFormatType( name, settings );
+	}
+};
+
+/**
+ * Unregister an updated or removed format type.
+ *
+ * @param {Object}   format           The exported format module.
+ * @param {String}   format.name      Format type name.
+ * @param {Object}   format.settings  Format type configuration object.
+ */
+export const unregisterFormat = ( { name, settings } ) => {
+	if ( name && settings ) {
+		richText.unregisterFormatType( name );
+	}
+};
+
+/**
+ * Require a set of format types and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted formats.
+ * @param {Function} options.[unregister] Function to unregister replaced formats.
+ * @param {Function} options.[before]     Function to run before updating formats.
+ * @param {Function} options.[after]      Function to run after updating formats.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
+ */
+export const autoloadFormats = (
+	{
+		getContext,
+		register = registerFormat,
+		unregister = unregisterFormat,
 		before,
 		after,
 	},
