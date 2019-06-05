@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.autoloadPlugins = exports.unregisterPlugin = exports.registerPlugin = exports.autoloadBlocks = exports.afterUpdateBlocks = exports.beforeUpdateBlocks = exports.unregisterBlock = exports.registerBlock = exports.autoload = void 0;
+exports.autoloadFormats = exports.unregisterFormat = exports.registerFormat = exports.autoloadPlugins = exports.unregisterPlugin = exports.registerPlugin = exports.autoloadBlocks = exports.afterUpdateBlocks = exports.beforeUpdateBlocks = exports.unregisterBlock = exports.registerBlock = exports.autoload = void 0;
 
 /**
  * Provide helper methods to dynamically locate, load & register Blocks & Plugins.
@@ -11,6 +11,7 @@ exports.autoloadPlugins = exports.unregisterPlugin = exports.registerPlugin = ex
 var _window$wp = window.wp,
     blocks = _window$wp.blocks,
     plugins = _window$wp.plugins,
+    richText = _window$wp.richText,
     hooks = _window$wp.hooks,
     data = _window$wp.data;
 /**
@@ -267,8 +268,9 @@ var registerPlugin = function registerPlugin(_ref8) {
   if (filters && Array.isArray(filters)) {
     filters.forEach(function (_ref9) {
       var hook = _ref9.hook,
-          namespace = _ref9.namespace;
-      hooks.removeFilter(hook, namespace);
+          namespace = _ref9.namespace,
+          callback = _ref9.callback;
+      hooks.addFilter(hook, namespace, callback);
     });
   }
 };
@@ -336,5 +338,78 @@ var autoloadPlugins = function autoloadPlugins(_ref12, callback) {
     after: after
   }, callback);
 };
+/**
+ * Register a new or updated format type
+ *
+ * @param {Object}   format           The exported format module.
+ * @param {String}   format.name      Format type name.
+ * @param {Object}   format.settings  Format type configuration object.
+ */
+
 
 exports.autoloadPlugins = autoloadPlugins;
+
+var registerFormat = function registerFormat(_ref13) {
+  var name = _ref13.name,
+      settings = _ref13.settings;
+
+  if (name && settings) {
+    richText.registerFormatType(name, settings);
+  }
+};
+/**
+ * Unregister an updated or removed format type.
+ *
+ * @param {Object}   format           The exported format module.
+ * @param {String}   format.name      Format type name.
+ * @param {Object}   format.settings  Format type configuration object.
+ */
+
+
+exports.registerFormat = registerFormat;
+
+var unregisterFormat = function unregisterFormat(_ref14) {
+  var name = _ref14.name,
+      settings = _ref14.settings;
+
+  if (name && settings) {
+    richText.unregisterFormatType(name);
+  }
+};
+/**
+ * Require a set of format types and configure them for hot module replacement.
+ *
+ * @see autoload
+ *
+ * @param {Object}   options              Configuration object defining callbacks.
+ * @param {Function} options.getContext   Execute and return a `require.context()` call.
+ * @param {Function} options.[register]   Function to register accepted formats.
+ * @param {Function} options.[unregister] Function to unregister replaced formats.
+ * @param {Function} options.[before]     Function to run before updating formats.
+ * @param {Function} options.[after]      Function to run after updating formats.
+ * @param {Function} [callback]           A callback function which will be passed the
+ *                                        generated `context` object and `loadModules`
+ *                                        function, which can be used to opt-in to HMR.
+ */
+
+
+exports.unregisterFormat = unregisterFormat;
+
+var autoloadFormats = function autoloadFormats(_ref15, callback) {
+  var getContext = _ref15.getContext,
+      _ref15$register = _ref15.register,
+      register = _ref15$register === void 0 ? registerFormat : _ref15$register,
+      _ref15$unregister = _ref15.unregister,
+      unregister = _ref15$unregister === void 0 ? unregisterFormat : _ref15$unregister,
+      before = _ref15.before,
+      after = _ref15.after;
+  autoload({
+    getContext: getContext,
+    register: register,
+    unregister: unregister,
+    before: before,
+    after: after
+  }, callback);
+};
+
+exports.autoloadFormats = autoloadFormats;
