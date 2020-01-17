@@ -116,7 +116,7 @@ autoloadFormats(
 
 In case you need more control over things, the library also exports a generic `autoload` function, as well as any block- or plugin-specific function that is used as a default value.
 
-```
+```js
 import {
 	autoload,
 
