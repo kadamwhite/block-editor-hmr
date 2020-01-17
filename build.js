@@ -167,8 +167,8 @@ var unregisterBlock = function unregisterBlock(_ref4) {
 exports.unregisterBlock = unregisterBlock;
 
 var beforeUpdateBlocks = function beforeUpdateBlocks() {
-  selectedBlockId = data.select('core/editor').getSelectedBlockClientId();
-  data.dispatch('core/editor').clearSelectedBlock();
+  selectedBlockId = data.select('core/block-editor').getSelectedBlockClientId();
+  data.dispatch('core/block-editor').clearSelectedBlock();
 };
 /**
  * Trigger a re-render on all blocks which have changed.
@@ -190,19 +190,19 @@ var afterUpdateBlocks = function afterUpdateBlocks() {
   } // Refresh all blocks by iteratively selecting each one that has changed.
 
 
-  data.select('core/editor').getBlocks().forEach(function (_ref6) {
+  data.select('core/block-editor').getBlocks().forEach(function (_ref6) {
     var name = _ref6.name,
         clientId = _ref6.clientId;
 
     if (changedNames.includes(name)) {
-      data.dispatch('core/editor').selectBlock(clientId);
+      data.dispatch('core/block-editor').selectBlock(clientId);
     }
   }); // Reselect whatever was selected in the beginning.
 
   if (selectedBlockId) {
-    data.dispatch('core/editor').selectBlock(selectedBlockId);
+    data.dispatch('core/block-editor').selectBlock(selectedBlockId);
   } else {
-    data.dispatch('core/editor').clearSelectedBlock();
+    data.dispatch('core/block-editor').clearSelectedBlock();
   }
 
   selectedBlockId = null;
