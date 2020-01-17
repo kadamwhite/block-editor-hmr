@@ -26,6 +26,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel index.js --out-file build.js",
+    "lint": "eslint index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
