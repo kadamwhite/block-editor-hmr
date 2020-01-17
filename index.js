@@ -135,8 +135,8 @@ export const unregisterBlock = ( { name, settings, filters, styles } ) => {
  * Store the selected block to persist selection across block-swaps.
  */
 export const beforeUpdateBlocks = () => {
-	selectedBlockId = data.select( 'core/editor' ).getSelectedBlockClientId();
-	data.dispatch( 'core/editor' ).clearSelectedBlock();
+	selectedBlockId = data.select( 'core/block-editor' ).getSelectedBlockClientId();
+	data.dispatch( 'core/block-editor' ).clearSelectedBlock();
 };
 
 /**
@@ -152,17 +152,17 @@ export const afterUpdateBlocks = ( changed = [] ) => {
 	}
 
 	// Refresh all blocks by iteratively selecting each one that has changed.
-	data.select( 'core/editor' ).getBlocks().forEach( ( { name, clientId } ) => {
+	data.select( 'core/block-editor' ).getBlocks().forEach( ( { name, clientId } ) => {
 		if ( changedNames.includes( name ) ) {
-			data.dispatch( 'core/editor' ).selectBlock( clientId );
+			data.dispatch( 'core/block-editor' ).selectBlock( clientId );
 		}
 	} );
 
 	// Reselect whatever was selected in the beginning.
 	if ( selectedBlockId ) {
-		data.dispatch( 'core/editor' ).selectBlock( selectedBlockId );
+		data.dispatch( 'core/block-editor' ).selectBlock( selectedBlockId );
 	} else {
-		data.dispatch( 'core/editor' ).clearSelectedBlock();
+		data.dispatch( 'core/block-editor' ).clearSelectedBlock();
 	}
 	selectedBlockId = null;
 };
