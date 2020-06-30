@@ -343,3 +343,57 @@ export const autoloadFormats = (
 		callback
 	);
 };
+
+/**
+ * Work around a full-page crash in WordPress 5.4 caused by a forced render of
+ * the BlockListBlock component following the state dispatch triggered upon block
+ * unregistration.
+ * 
+ * This function filters the BlockListBlock component to wrap it in an error
+ * boundary, which catches the error when BlockListBlock tries to access a
+ * property on the removed block type, suppresses the error by returning null,
+ * and then schedules the BlockListBlock to try rendering again on the next
+ * tick (by which point our hot-swapped block type should be available again).
+ */
+export const _apply_wp_5_4_hmr_patch = () => {
+	const React = window.React;
+	const { Component, Fragment, createElement } = React;
+
+	hooks.addFilter(
+		'editor.BlockListBlock',
+		'block-editor-hmr/prevent-block-swapping-error',
+		( BlockListBlock ) => {
+			class ErrorWrapper extends Component {
+				constructor( props ) {
+					super( props );
+					this.state = { hasError: false };
+				}
+			
+				static getDerivedStateFromError( error ) {
+					return { hasError: true };
+				}
+
+				componentDidUpdate( prevProps, prevState ) {
+					if ( this.state.hasError && this.state.hasError !== prevState.hasError ) {
+						setTimeout( () => {
+							this.setState( { hasError: false } );
+						} );
+					}
+				}
+			
+				render() {
+					if ( this.state.hasError ) {
+						return null;
+					}
+					return createElement(
+						Fragment,
+						null,
+						createElement( BlockListBlock, this.props )
+					);
+				}
+			}
+
+			return ErrorWrapper;
+		}
+	);
+};
