@@ -57,7 +57,11 @@ export const autoload = (
 				// Module unchanged: no further action needed.
 				return;
 			}
-			if ( cache[ key ] ) {
+			const isHotUpdate = cache[ key ];
+			if ( isHotUpdate && console.groupCollapsed ) {
+				console.groupCollapsed( `hot update: ${ key }` );
+			}
+			if ( isHotUpdate ) {
 				// Module changed, and prior copy detected: unregister old module.
 				unregister( cache[ key ] );
 			}
@@ -65,6 +69,10 @@ export const autoload = (
 			register( module );
 			changed.push( module );
 			cache[ key ] = module;
+
+			if ( isHotUpdate && console.groupCollapsed ) {
+				console.groupEnd();
+			}
 		} );
 
 		after( changed );
