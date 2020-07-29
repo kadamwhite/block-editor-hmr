@@ -89,9 +89,12 @@ var autoload = function autoload(_ref) {
 
       var isHotUpdate = cache[key];
 
-      if (isHotUpdate) {
-        console.groupCollapsed("hot update: ".concat(key)); // Module changed, and prior copy detected: unregister old module.
+      if (isHotUpdate && console.groupCollapsed) {
+        console.groupCollapsed("hot update: ".concat(key));
+      }
 
+      if (isHotUpdate) {
+        // Module changed, and prior copy detected: unregister old module.
         unregister(cache[key]);
       } // Register new module and update cache.
 
@@ -100,7 +103,7 @@ var autoload = function autoload(_ref) {
       changed.push(module);
       cache[key] = module;
 
-      if (isHotUpdate) {
+      if (isHotUpdate && console.groupCollapsed) {
         console.groupEnd();
       }
     });
