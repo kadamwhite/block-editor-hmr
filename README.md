@@ -17,7 +17,7 @@ src
 │       └── index.js
 └── blocks.js
 ```
-and that your block files export at minimum a `name` string and `settings` object:
+and that your block files export at minimum **either** a `settings` object and `name` string:
 
 ```js
 export const name = 'myplugin/block-a';
@@ -28,6 +28,19 @@ export const settings = {
 	description: 'An excellent example block',
 
 	// icon, category, attributes, edit, save, etcetera
+}
+
+```
+
+ **or** a `settings` object that has a `name` string property (e.g., when using `block.json` to manage your block's metadata):
+
+```js
+import metadata from './block.json';
+
+export const settings = {
+	...metadata
+
+	// edit, save, other dynamic data
 }
 
 ```
