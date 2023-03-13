@@ -93,14 +93,14 @@ let selectedBlockId = null;
  * Register a new or updated block.
  *
  * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name. May be included in configuration object.
  * @param {Object}   block.settings   Block configuration object.
- * @param {String}   block.name       Block name. May be included in configuration.
  * @param {Object[]} [block.filters]  Optional array of filters to bind.
  * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
-export const registerBlock = ( { settings, name = settings?.name, filters, styles } ) => {
-	if ( name && settings ) {
-		blocks.registerBlockType( name, settings );
+export const registerBlock = ( { name, settings, filters, styles } ) => {
+	if ( ( name || settings.name ) && settings ) {
+		blocks.registerBlockType( ( name || settings.name ), settings );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
@@ -118,14 +118,14 @@ export const registerBlock = ( { settings, name = settings?.name, filters, style
  * Unregister an updated or removed block.
  *
  * @param {Object}   block            The exported block module.
+ * @param {String}   block.name       Block name. May be included in configuration object.
  * @param {Object}   block.settings   Block configuration object.
- * @param {String}   block.name       Block name. May be included in configuration.
  * @param {Object[]} [block.filters]  Optional array of filters to bind.
  * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
-export const unregisterBlock = ( { settings, name = settings?.name, filters, styles } ) => {
-	if ( name && settings ) {
-		blocks.unregisterBlockType( name );
+export const unregisterBlock = ( { name, settings, filters, styles } ) => {
+	if ( ( name || settings.name ) && settings ) {
+		blocks.unregisterBlockType( ( name || settings.name ) );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
