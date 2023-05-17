@@ -51,7 +51,7 @@ export const autoload = (
 
 		const context = getContext();
 		const changed = [];
-		context.keys().forEach( key => {
+		context.keys().forEach( ( key ) => {
 			const module = context( key );
 			if ( module === cache[ key ] ) {
 				// Module unchanged: no further action needed.
@@ -110,7 +110,7 @@ export const registerBlock = ( { name, settings, filters, styles } ) => {
 	}
 
 	if ( styles && Array.isArray( styles ) ) {
-		styles.forEach( style => blocks.registerBlockStyle( name, style ) );
+		styles.forEach( ( style ) => blocks.registerBlockStyle( name, style ) );
 	}
 };
 
@@ -135,7 +135,7 @@ export const unregisterBlock = ( { name, settings, filters, styles } ) => {
 	}
 
 	if ( styles && Array.isArray( styles ) ) {
-		styles.forEach( style => blocks.unregisterBlockStyle( name, style.name ) );
+		styles.forEach( ( style ) => blocks.unregisterBlockStyle( name, style.name ) );
 	}
 };
 
@@ -153,7 +153,7 @@ export const beforeUpdateBlocks = () => {
  * @param {Object[]} changed Array of changed module objects.
  */
 export const afterUpdateBlocks = ( changed = [] ) => {
-	const changedNames = changed.map( module => module.name );
+	const changedNames = changed.map( ( module ) => module.name );
 
 	if ( ! changedNames.length ) {
 		return;
@@ -352,11 +352,13 @@ export const autoloadFormats = (
 	);
 };
 
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable camelcase */
 /**
  * Work around a full-page crash in WordPress 5.4 caused by a forced render of
  * the BlockListBlock component following the state dispatch triggered upon block
  * unregistration.
- * 
+ *
  * This function filters the BlockListBlock component to wrap it in an error
  * boundary, which catches the error when BlockListBlock tries to access a
  * property on the removed block type, suppresses the error by returning null,
@@ -364,6 +366,7 @@ export const autoloadFormats = (
  * tick (by which point our hot-swapped block type should be available again).
  */
 export const _apply_wp_5_4_hmr_patch = () => {
+	/* eslint-enable */
 	const React = window.React;
 	const { Component, Fragment, createElement } = React;
 
@@ -376,7 +379,8 @@ export const _apply_wp_5_4_hmr_patch = () => {
 					super( props );
 					this.state = { hasError: false };
 				}
-			
+
+				// eslint-disable-next-line no-unused-vars
 				static getDerivedStateFromError( error ) {
 					return { hasError: true };
 				}
@@ -388,11 +392,12 @@ export const _apply_wp_5_4_hmr_patch = () => {
 						} );
 					}
 				}
-			
+
 				render() {
 					if ( this.state.hasError ) {
 						return null;
 					}
+
 					return createElement(
 						Fragment,
 						null,
