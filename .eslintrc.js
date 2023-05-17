@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable array-element-newline,array-bracket-newline */
 module.exports = {
     'env': {
         'browser': true,
@@ -9,20 +11,17 @@ module.exports = {
         'SharedArrayBuffer': 'readonly'
     },
     'parserOptions': {
-        'ecmaVersion': 2018,
+        'ecmaVersion': 2020,
         'sourceType': 'module'
     },
     'rules': {
         'accessor-pairs': 'error',
         'array-bracket-newline': 'error',
-        'array-bracket-spacing': 'error',
+        'array-bracket-spacing': [ 'error', 'always' ],
         'array-callback-return': 'error',
         'array-element-newline': 'error',
         'arrow-body-style': 'error',
-        'arrow-parens': [
-            'error',
-            'as-needed'
-        ],
+        'arrow-parens': [ 'error', 'always' ],
         'arrow-spacing': [
             'error',
             {
@@ -120,7 +119,6 @@ module.exports = {
         'max-lines-per-function': 'error',
         'max-nested-callbacks': 'error',
         'max-params': 'error',
-        'max-statements': 'error',
         'max-statements-per-line': 'error',
         'multiline-comment-style': 'error',
         'multiline-ternary': 'error',
@@ -137,7 +135,7 @@ module.exports = {
         'no-caller': 'error',
         'no-catch-shadow': 'error',
         'no-confusing-arrow': 'error',
-        'no-console': 'error',
+        'no-console': 'off',
         'no-constructor-return': 'error',
         'no-continue': 'error',
         'no-div-regex': 'error',
@@ -150,7 +148,6 @@ module.exports = {
         'no-extend-native': 'error',
         'no-extra-bind': 'error',
         'no-extra-label': 'error',
-        'no-extra-parens': 'error',
         'no-floating-decimal': 'error',
         'no-implicit-coercion': 'error',
         'no-implicit-globals': 'error',
@@ -244,7 +241,6 @@ module.exports = {
         'padding-line-between-statements': 'error',
         'prefer-arrow-callback': 'error',
         'prefer-const': 'error',
-        'prefer-destructuring': 'error',
         'prefer-exponentiation-operator': 'error',
         'prefer-named-capture-group': 'error',
         'prefer-numeric-literals': 'error',
@@ -255,7 +251,6 @@ module.exports = {
         'prefer-rest-params': 'error',
         'prefer-spread': 'error',
         'prefer-template': 'error',
-        'quote-props': 'error',
         'quotes': [
             'error',
             'single'
@@ -275,7 +270,11 @@ module.exports = {
         'sort-keys': 'off',
         'sort-vars': 'error',
         'space-before-blocks': 'error',
-        'space-before-function-paren': 'error',
+        'space-before-function-paren': [ 'error', {
+            'anonymous': 'never',
+            'named': 'never',
+            'asyncArrow': 'always'
+        } ],
         'space-in-parens': [
             'error',
             'always'
@@ -288,7 +287,7 @@ module.exports = {
         'strict': 'error',
         'switch-colon-spacing': 'error',
         'symbol-description': 'error',
-        'template-curly-spacing': 'error',
+        'template-curly-spacing': [ 'error', 'always' ],
         'template-tag-spacing': 'error',
         'unicode-bom': [
             'error',

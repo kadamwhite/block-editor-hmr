@@ -1,0 +1,15 @@
+# Top-most EditorConfig file (see EditorConfig.org)
+root = true
+
+# Unix-style newlines with a newline ending every file
+# Tab indentation most places
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = tab
+trim_trailing_whitespace = true
+
+# YAML files require spaces. JSON doesn't, but our file uses them.
+[*.{yaml,yml,json}]
+indent_style = space
+indent_size = 2
