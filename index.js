@@ -90,17 +90,17 @@ export const autoload = (
 let selectedBlockId = null;
 
 /**
- * Register a new or updated block.
+ * Register a new or updated block, filters, or style variations.
  *
  * @param {Object}   block            The exported block module.
  * @param {String}   block.name       Block name. May be included in configuration object.
- * @param {Object}   block.settings   Block configuration object.
+ * @param {Object}   [block.settings] Optional block configuration object.
  * @param {Object[]} [block.filters]  Optional array of filters to bind.
  * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
 export const registerBlock = ( { name, settings, filters, styles } ) => {
-	if ( ( name || settings.name ) && settings ) {
-		blocks.registerBlockType( ( name || settings.name ), settings );
+	if ( ( name || settings?.name ) && settings ) {
+		blocks.registerBlockType( ( name || settings?.name ), settings );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
@@ -115,17 +115,17 @@ export const registerBlock = ( { name, settings, filters, styles } ) => {
 };
 
 /**
- * Unregister an updated or removed block.
+ * Unregister an updated or removed block, filters, or style variations.
  *
  * @param {Object}   block            The exported block module.
  * @param {String}   block.name       Block name. May be included in configuration object.
- * @param {Object}   block.settings   Block configuration object.
+ * @param {Object}   [block.settings] Optional block configuration object.
  * @param {Object[]} [block.filters]  Optional array of filters to bind.
  * @param {Object[]} [block.styles]   Optional array of block styles to bind.
  */
 export const unregisterBlock = ( { name, settings, filters, styles } ) => {
-	if ( ( name || settings.name ) && settings ) {
-		blocks.unregisterBlockType( ( name || settings.name ) );
+	if ( ( name || settings?.name ) && settings ) {
+		blocks.unregisterBlockType( ( name || settings?.name ) );
 	}
 
 	if ( filters && Array.isArray( filters ) ) {
