@@ -69,6 +69,7 @@ module.exports = [
 			'indent-legacy': 'off',
 			'indent': 'off',
 			'init-declarations': 'error',
+			'jsdoc/tag-lines': 'off',
 			'jsx-quotes': 'error',
 			'key-spacing': 'error',
 			'keyword-spacing': [ 'error', { 'after': true, 'before': true } ],
