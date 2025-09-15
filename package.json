@@ -25,7 +25,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "babel index.js --out-file build.js",
-    "lint": "eslint index.js",
+    "lint": "eslint index.js eslint.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -33,6 +33,9 @@
     "@babel/core": "^7.28.4",
     "@babel/eslint-parser": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
-    "eslint": "^9.35.0"
+    "@eslint/js": "^9.35.0",
+    "eslint": "^9.35.0",
+    "eslint-plugin-jsdoc": "^57.1.0",
+    "globals": "^16.4.0"
   }
 }
