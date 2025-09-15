@@ -34,7 +34,6 @@
     "@babel/core": "^7.10.5",
     "@babel/eslint-parser": "^7.21.8",
     "@babel/preset-env": "^7.10.4",
-    "core-js": "^2.6.11",
     "eslint": "^8.40.0"
   }
 }
