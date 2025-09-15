@@ -24,15 +24,6 @@ and that you are [building your project into per-block bundles using `wp-scripts
 The standard boilerplate expected by this utility can be seen at the bottom of this example block `index.js`:
 
 ```js
-/**
- * An expandable "accordion item".
- *
- * Child block of the "shiro/accordion" wrapper block.
- */
-
-/**
- * WordPress dependencies
- */
 import { registerBlockType } from '@wordpress/blocks';
 
 import metadata from './block.json';
@@ -45,7 +36,6 @@ registerBlockType( metadata.name, {
 	...metadata,
 	edit,
 	save,
-	deprecated,
 } );
 
 // Block HMR boilerplate.
