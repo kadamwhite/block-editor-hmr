@@ -18,10 +18,9 @@
     "url": "https://github.com/kadamwhite/block-editor-hmr/issues"
   },
   "browserslist": [
-    "chrome >= 91",
-    "firefox >= 90",
-    "safari >= 15",
-    "edge >= 91"
+    "last 2 versions",
+    "not dead",
+    "not < 0.25%"
   ],
   "scripts": {
     "prepublish": "npm run build",
