@@ -68,3 +68,7 @@ If we try to register a block without unregistering it first, the block editor t
 ### Can we simplify that boilerplate?
 
 It's possible this could be simplified further, but testing to date indicates that `module.hot.accept` _must_ be called from the entrypoint file within your project, rather than being abstracted within the third-party NPM module.
+
+## What if I do not use per-block bundles?
+
+While we recommend following `wp-scripts`' preferred structure and bundling your JS at the level of an individual block (for both performance and maintainability reasons), if you do still use a kitchen-sink bundle for all of your blocks, [you may prefer to stick with the legacy `v0.7.0` API documented here](https://github.com/kadamwhite/block-editor-hmr/tree/684b63e60208f047703ddebf0f8f351525e4bebe/README.md).
