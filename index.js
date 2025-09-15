@@ -25,12 +25,12 @@ const noop = () => {};
  * which already exist in the cache are unregistered with the provided function,
  * then any incoming (new or updated) modules will be registered.
  *
- * @param {Object}   options            Configuration object defining callbacks.
+ * @param {object}   options            Configuration object defining callbacks.
  * @param {Function} options.getContext Execute and return a `require.context()` call.
  * @param {Function} options.register   Function to register accepted modules.
  * @param {Function} options.unregister Function to unregister replaced modules.
- * @param {Function} options.[before]   Function to run before updating modules.
- * @param {Function} options.[after]    Function to run after updating modules.
+ * @param {Function} [options.before]   Function to run before updating modules.
+ * @param {Function} [options.after]    Function to run after updating modules.
  * @param {Function} [callback]         A callback function which will be passed the
  *                                      generated `context` object and `loadModules`
  *                                      function, which can be used to opt-in to HMR.
@@ -92,11 +92,11 @@ let selectedBlockId = null;
 /**
  * Register a new or updated block, filters, or style variations.
  *
- * @param {Object}   block            The exported block module.
- * @param {String}   block.name       Block name. May be included in configuration object.
- * @param {Object}   [block.settings] Optional block configuration object.
- * @param {Object[]} [block.filters]  Optional array of filters to bind.
- * @param {Object[]} [block.styles]   Optional array of block styles to bind.
+ * @param {object}   block            The exported block module.
+ * @param {string}   block.name       Block name. May be included in configuration object.
+ * @param {object}   [block.settings] Optional block configuration object.
+ * @param {object[]} [block.filters]  Optional array of filters to bind.
+ * @param {object[]} [block.styles]   Optional array of block styles to bind.
  */
 export const registerBlock = ( { name, settings, filters, styles } ) => {
 	if ( ( name || settings?.name ) && settings ) {
@@ -117,11 +117,11 @@ export const registerBlock = ( { name, settings, filters, styles } ) => {
 /**
  * Unregister an updated or removed block, filters, or style variations.
  *
- * @param {Object}   block            The exported block module.
- * @param {String}   block.name       Block name. May be included in configuration object.
- * @param {Object}   [block.settings] Optional block configuration object.
- * @param {Object[]} [block.filters]  Optional array of filters to bind.
- * @param {Object[]} [block.styles]   Optional array of block styles to bind.
+ * @param {object}   block            The exported block module.
+ * @param {string}   block.name       Block name. May be included in configuration object.
+ * @param {object}   [block.settings] Optional block configuration object.
+ * @param {object[]} [block.filters]  Optional array of filters to bind.
+ * @param {object[]} [block.styles]   Optional array of block styles to bind.
  */
 export const unregisterBlock = ( { name, settings, filters, styles } ) => {
 	if ( ( name || settings?.name ) && settings ) {
@@ -150,7 +150,7 @@ export const beforeUpdateBlocks = () => {
 /**
  * Trigger a re-render on all blocks which have changed.
  *
- * @param {Object[]} changed Array of changed module objects.
+ * @param {object[]} changed Array of changed module objects.
  */
 export const afterUpdateBlocks = ( changed = [] ) => {
 	const changedNames = changed.map( ( module ) => module.name );
@@ -180,12 +180,12 @@ export const afterUpdateBlocks = ( changed = [] ) => {
  *
  * @see autoload
  *
- * @param {Object}   options              Configuration object defining callbacks.
+ * @param {object}   options              Configuration object defining callbacks.
  * @param {Function} options.getContext   Execute and return a `require.context()` call.
- * @param {Function} options.[register]   Function to register accepted blocks.
- * @param {Function} options.[unregister] Function to unregister replaced blocks.
- * @param {Function} options.[before]     Function to run before updating blocks.
- * @param {Function} options.[after]      Function to run after updating blocks.
+ * @param {Function} [options.register]   Function to register accepted blocks.
+ * @param {Function} [options.unregister] Function to unregister replaced blocks.
+ * @param {Function} [options.before]     Function to run before updating blocks.
+ * @param {Function} [options.after]      Function to run after updating blocks.
  * @param {Function} [callback]           A callback function which will be passed the
  *                                        generated `context` object and `loadModules`
  *                                        function, which can be used to opt-in to HMR.
@@ -215,10 +215,10 @@ export const autoloadBlocks = (
 /**
  * Register a new or updated plugin.
  *
- * @param {Object}   plugin           The exported plugin module.
- * @param {String}   plugin.name      Plugin name.
- * @param {Object}   plugin.settings  Plugin configuration object.
- * @param {Object[]} [plugin.filters] Optional array of filters to bind.
+ * @param {object}   plugin           The exported plugin module.
+ * @param {string}   plugin.name      Plugin name.
+ * @param {object}   plugin.settings  Plugin configuration object.
+ * @param {object[]} [plugin.filters] Optional array of filters to bind.
  */
 export const registerPlugin = ( { name, settings, filters } ) => {
 	if ( name && settings ) {
@@ -235,10 +235,10 @@ export const registerPlugin = ( { name, settings, filters } ) => {
 /**
  * Unregister an updated or removed plugin.
  *
- * @param {Object}   plugin           The exported plugin module.
- * @param {String}   plugin.name      Plugin name.
- * @param {Object}   plugin.settings  Plugin configuration object.
- * @param {Object[]} [plugin.filters] Optional array of filters to bind.
+ * @param {object}   plugin           The exported plugin module.
+ * @param {string}   plugin.name      Plugin name.
+ * @param {object}   plugin.settings  Plugin configuration object.
+ * @param {object[]} [plugin.filters] Optional array of filters to bind.
  */
 export const unregisterPlugin = ( { name, settings, filters } ) => {
 	if ( name && settings ) {
@@ -257,12 +257,12 @@ export const unregisterPlugin = ( { name, settings, filters } ) => {
  *
  * @see autoload
  *
- * @param {Object}   options              Configuration object defining callbacks.
+ * @param {object}   options              Configuration object defining callbacks.
  * @param {Function} options.getContext   Execute and return a `require.context()` call.
- * @param {Function} options.[register]   Function to register accepted plugins.
- * @param {Function} options.[unregister] Function to unregister replaced plugins.
- * @param {Function} options.[before]     Function to run before updating plugins.
- * @param {Function} options.[after]      Function to run after updating plugins.
+ * @param {Function} [options.register]   Function to register accepted plugins.
+ * @param {Function} [options.unregister] Function to unregister replaced plugins.
+ * @param {Function} [options.before]     Function to run before updating plugins.
+ * @param {Function} [options.after]      Function to run after updating plugins.
  * @param {Function} [callback]           A callback function which will be passed the
  *                                        generated `context` object and `loadModules`
  *                                        function, which can be used to opt-in to HMR.
@@ -292,9 +292,9 @@ export const autoloadPlugins = (
 /**
  * Register a new or updated format type
  *
- * @param {Object}   format           The exported format module.
- * @param {String}   format.name      Format type name.
- * @param {Object}   format.settings  Format type configuration object.
+ * @param {object}   format           The exported format module.
+ * @param {string}   format.name      Format type name.
+ * @param {object}   format.settings  Format type configuration object.
  */
 export const registerFormat = ( { name, settings } ) => {
 	if ( name && settings ) {
@@ -305,9 +305,9 @@ export const registerFormat = ( { name, settings } ) => {
 /**
  * Unregister an updated or removed format type.
  *
- * @param {Object}   format           The exported format module.
- * @param {String}   format.name      Format type name.
- * @param {Object}   format.settings  Format type configuration object.
+ * @param {object}   format           The exported format module.
+ * @param {string}   format.name      Format type name.
+ * @param {object}   format.settings  Format type configuration object.
  */
 export const unregisterFormat = ( { name, settings } ) => {
 	if ( name && settings ) {
@@ -320,12 +320,12 @@ export const unregisterFormat = ( { name, settings } ) => {
  *
  * @see autoload
  *
- * @param {Object}   options              Configuration object defining callbacks.
+ * @param {object}   options              Configuration object defining callbacks.
  * @param {Function} options.getContext   Execute and return a `require.context()` call.
- * @param {Function} options.[register]   Function to register accepted formats.
- * @param {Function} options.[unregister] Function to unregister replaced formats.
- * @param {Function} options.[before]     Function to run before updating formats.
- * @param {Function} options.[after]      Function to run after updating formats.
+ * @param {Function} [options.register]   Function to register accepted formats.
+ * @param {Function} [options.unregister] Function to unregister replaced formats.
+ * @param {Function} [options.before]     Function to run before updating formats.
+ * @param {Function} [options.after]      Function to run after updating formats.
  * @param {Function} [callback]           A callback function which will be passed the
  *                                        generated `context` object and `loadModules`
  *                                        function, which can be used to opt-in to HMR.
