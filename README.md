@@ -41,11 +41,73 @@ registerBlockType( metadata.name, {
 // Block HMR boilerplate.
 if ( module.hot ) {
 	module.hot.accept();
-	const { deregister, refresh } = require( '../../helpers/hot-blocks.js' );
+	const { deregisterBlock, refreshEditor } = require( '../../helpers/hot-blocks.js' );
 	module.hot.dispose( deregister( metadata.name ) );
 	refresh( metadata.name, module.hot.data );
 }
 ```
+
+## API
+
+### `deregisterBlock( blockName: string, variants: ?object )`
+
+The `deregisterBlock` function returns a callback which should be passed to `module.hot.dispose()`, which cleans up the outgoing block before the new version gets registered. It takes the name of a block (required), and an optional object of block filters and styles to unhook.
+
+#### Hot-swapping block styles and block editor filters
+
+This second `variants` argument can be used when your block sets up JS-side [block styles](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/) or [filter hooks](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/) on initialization, to avoid double-registering styles or filters when re-registering the new version of the block. For example,
+
+```js
+// This is the bottom of index.js, after the normal block registration
+// boilerplate as shown in the example above.
+
+// This block declares several style variations. We need to unhook each one
+// before registering the new version of the block.
+const styles = [
+	{
+		name: 'light',
+		label: __( 'Light', 'textdomain' ),
+		isDefault: true,
+	},
+	{
+		name: 'dark',
+		label: __( 'Dark', 'textdomain' ),
+	},
+];
+
+styles.forEach( ( style ) => registerBlockStyle( metadata.name, style ) );
+
+// Block HMR boilerplate.
+if ( module.hot ) {
+	module.hot.accept();
+	const { deregister, refresh } = require( '../../helpers/hot-blocks.js' );
+	// Pass the styles array into `deregister()` to dispose of them correctly.
+	module.hot.dispose( deregister( metadata.name, { styles } ) );
+	refresh( metadata.name, module.hot.data );
+}
+```
+
+This can also be done with an array of filters, passing an array of objects with `hook` and `namespace` strings to `deregister( metadata.name, { hooks: [ ... ] } )`. Here's an example of how you'd define your filters using a `hooks` array that can be passed to deregister later:
+
+```js
+const hooks = [
+	{
+		hook: 'blocks.registerBlockType',
+		namespace: 'my-plugin/class-names/list-block',
+		callback: addListBlockClassName
+	},
+];
+
+hooks.forEach( ( { hook, namespace, callback } ) => {
+	wp.hooks.addFilter( hook, namespace, callback );
+} );
+```
+
+### `refreshEditor( blockName: string, data: object )`
+
+The `refreshEditor` function in the HMR boilerplate above handles resetting the editor state appropriately after the new version of a block comes in. If a block is deregistered and then re-registered, it will lose focus in the editor. If the edit method for that block changes its UI on `isSelected`, this can cause unexpected layout shifts and prevent easy iteration on edit method subcomponents.
+
+Hot-reloading will work without it, but it should be a smoother experience if you maintain this in your HMR boilerplate.
 
 ## Script Dependencies
 
