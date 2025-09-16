@@ -8,155 +8,119 @@ Assuming your blocks are stored in a folder organized like this:
 
 ```
 src
-├── blocks
-│   ├── block-a
-│   │   └── index.js
-│   ├── block-b
-│   │   └── index.js
-│   └── block-c
-│       └── index.js
-└── blocks.js
+└── blocks
+    ├── block-a
+    │   ├── block.json
+    │   └── index.js
+    ├── block-b
+    │   ├── block.json
+    │   └── index.js
+    └── block-c
+        ├── block.json
+        └── index.js
 ```
-and that your block files export at minimum **either** a `settings` object and `name` string:
+and that you are [building your project into per-block bundles using `wp-scripts build`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/#build), you can require this package within a JS module's `if ( module.hot ) { ... }` block to facilitate hot-reloading without "block already registered" errors or jumps in the editor due to changes in what block is selected.
+
+The standard boilerplate expected by this utility can be seen at the bottom of this example block `index.js`:
 
 ```js
-export const name = 'myplugin/block-a';
+import { registerBlockType } from '@wordpress/blocks';
 
-export const settings = {
-	title: 'Block A',
-
-	description: 'An excellent example block',
-
-	// icon, category, attributes, edit, save, etcetera
-}
-
-```
-
- **or** a `settings` object that has a `name` string property (e.g., when using `block.json` to manage your block's metadata):
-
-```js
 import metadata from './block.json';
+import edit from './edit';
+import save from './save';
 
-export const settings = {
-	...metadata
+import './style.scss';
 
-	// edit, save, other dynamic data
+registerBlockType( metadata.name, {
+	...metadata,
+	edit,
+	save,
+} );
+
+// Block HMR boilerplate.
+if ( module.hot ) {
+	module.hot.accept();
+	const { deregisterBlock, refreshEditor } = require( '../../helpers/hot-blocks.js' );
+	module.hot.dispose( deregister( metadata.name ) );
+	refresh( metadata.name, module.hot.data );
 }
-
 ```
 
-then you can put this code in `blocks.js` to automatically load and configure every block in your plugin:
+## API
+
+### `deregisterBlock( blockName: string, variants: ?object )`
+
+The `deregisterBlock` function returns a callback which should be passed to `module.hot.dispose()`, which cleans up the outgoing block before the new version gets registered. It takes the name of a block (required), and an optional object of block filters and styles to unhook.
+
+#### Hot-swapping block styles and block editor filters
+
+This second `variants` argument can be used when your block sets up JS-side [block styles](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/) or [filter hooks](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/) on initialization, to avoid double-registering styles or filters when re-registering the new version of the block. For example,
 
 ```js
-/**
- * blocks.js:
- * Dynamically locate, load & register all Gutenberg blocks.
- */
-import { autoloadBlocks } from 'block-editor-hmr';
+// This is the bottom of index.js, after the normal block registration
+// boilerplate as shown in the example above.
 
-// Load all block index files.
-autoloadBlocks(
+// This block declares several style variations. We need to unhook each one
+// before registering the new version of the block.
+const styles = [
 	{
-		/**
-		 * Return a project-specific require.context.
-		 */
-		getContext: () => require.context( './blocks', true, /index\.js$/ ),
+		name: 'light',
+		label: __( 'Light', 'textdomain' ),
+		isDefault: true,
 	},
-	( context, loadModules ) => {
-		if ( module.hot ) {
-			module.hot.accept( context.id, loadModules );
-		}
-	}
-);
-
-```
-
-## Block Editor Plugins
-
-The same logic applies if you want to register block editor plugins: export a `name` and `settings` from each plugin module, then use the provided `registerPlugin` and `unregisterPlugin` methods within your plugins entrypoint file.
-
-```js
-/**
- * plugins.js:
- * Dynamically locate, load & register all Gutenberg plugins.
- */
-import { autoloadPlugins } from 'block-editor-hmr';
-
-// Load all plugin index files.
-autoloadPlugins(
 	{
-		/**
-		 * Return a project-specific require.context.
-		 */
-		getContext: () => require.context( './plugins', true, /index\.js$/ ),
+		name: 'dark',
+		label: __( 'Dark', 'textdomain' ),
 	},
-	( context, loadModules ) => {
-		if ( module.hot ) {
-			module.hot.accept( context.id, loadModules );
-		}
-	}
-);
+];
+
+styles.forEach( ( style ) => registerBlockStyle( metadata.name, style ) );
+
+// Block HMR boilerplate.
+if ( module.hot ) {
+	module.hot.accept();
+	const { deregister, refresh } = require( '../../helpers/hot-blocks.js' );
+	// Pass the styles array into `deregister()` to dispose of them correctly.
+	module.hot.dispose( deregister( metadata.name, { styles } ) );
+	refresh( metadata.name, module.hot.data );
+}
 ```
 
-## Block Editor Formats
-
-As with blocks and plugins, helpers are also available to register [Block Formats](https://developer.wordpress.org/block-editor/tutorials/format-api/).
+This can also be done with an array of filters, passing an array of objects with `hook` and `namespace` strings to `deregister( metadata.name, { hooks: [ ... ] } )`. Here's an example of how you'd define your filters using a `hooks` array that can be passed to deregister later:
 
 ```js
-/**
- * Dynamically locate, load & register all Gutenberg formats.
- */
-import { autoloadFormats } from 'block-editor-hmr';
-
-// Load all format index files.
-autoloadFormats(
+const hooks = [
 	{
-		/**
-		 * Return a project-specific require.context.
-		 */
-		getContext: () => require.context( './formats', true, /index\.js$/ ),
+		hook: 'blocks.registerBlockType',
+		namespace: 'my-plugin/class-names/list-block',
+		callback: addListBlockClassName
 	},
-	( context, loadModules ) => {
-		if ( module.hot ) {
-			module.hot.accept( context.id, loadModules );
-		}
-	}
-);
+];
 
+hooks.forEach( ( { hook, namespace, callback } ) => {
+	wp.hooks.addFilter( hook, namespace, callback );
+} );
 ```
 
-## Need More Control?
+### `refreshEditor( blockName: string, data: object )`
 
-In case you need more control over things, the library also exports a generic `autoload` function, as well as any block- or plugin-specific function that is used as a default value.
+The `refreshEditor` function in the HMR boilerplate above handles resetting the editor state appropriately after the new version of a block comes in. If a block is deregistered and then re-registered, it will lose focus in the editor. If the edit method for that block changes its UI on `isSelected`, this can cause unexpected layout shifts and prevent easy iteration on edit method subcomponents.
 
-```js
-import {
-	autoload,
-
-	registerBlock,
-	unregisterBlock,
-	beforeUpdateBlocks,
-	afterUpdateBlocks,
-
-	registerPlugin,
-	unregisterPlugin,
-} from 'block-editor-hmr';
-```
-
-This means you can either pass select custom values to `autoloadBlocks` and `autoloadPlugins`, or roll your own autoloader via a fully custom `autoload`.
+Hot-reloading will work without it, but it should be a smoother experience if you maintain this in your HMR boilerplate.
 
 ## Script Dependencies
 
-For this to work, the bundle which utilizes these methods must be enqueued specifying `wp-blocks`, `wp-plugins`, `wp-hooks`, and `wp-data` as script dependencies.
+For this to work, the bundle which utilizes these methods must be enqueued specifying `wp-blocks`, `wp-hooks`, and `wp-data` as script dependencies.
 
 ## How does it work?
 
-[The `require.context` Webpack documentation is available here.](https://webpack.js.org/guides/dependency-management/#requirecontext)
+If we try to register a block without unregistering it first, the block editor throws an error and refuses to process the newer version of the block. We therefore unregister each hot-block at the start of the HMR update cycle (within `module.hot.dispose()`, when the outgoing version is being processed) and then register the new block in its place.
 
-`require.context` allows you to pass in a directory to search, a flag indicating whether subdirectories should be searched too, and a regular expression to match files against. The `autoload` method takes this context, uses it to load matching JS modules, then passes those modules through the `register` and `unregister` hooks as necessary. `before` and `after` hooks are provided to support things like maintaining block context, so that an update doesn't deselect the block you're working on.
+### Can we simplify that boilerplate?
 
-It's possible this could be simplified further, but testing to date indicates that `require.context` and `module.hot.accept` _must_ be called from the entrypoint file within your project, rather than being abstracted within the third-party NPM module.
+It's possible this could be simplified further, but testing to date indicates that `module.hot.accept` _must_ be called from the entrypoint file within your project, rather than being abstracted within the third-party NPM module.
 
-## A note on ESNext
+## What if I do not use per-block bundles?
 
-Note that at present, this file is not transpiled and may break some build processes. A built file with wider browser compatibility is my next step for this project.
+While we recommend following `wp-scripts`' preferred structure and bundling your JS at the level of an individual block (for both performance and maintainability reasons), if you do still use a kitchen-sink bundle for all of your blocks, [you may prefer to stick with the legacy `v0.7.0` API documented here](https://github.com/kadamwhite/block-editor-hmr/tree/684b63e60208f047703ddebf0f8f351525e4bebe/README.md).
