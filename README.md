@@ -50,7 +50,7 @@ registerBlockType( metadata.name, {
 if ( module.hot ) {
 	module.hot.accept();
 	const { deregisterBlock, refreshEditor } = require( '../../helpers/hot-blocks.js' );
-	module.hot.dispose( deregister( metadata.name ) );
+	module.hot.dispose( deregisterBlock( metadata.name ) );
 	refreshEditor( metadata.name, module.hot.data );
 }
 ```
@@ -63,14 +63,14 @@ The `deregisterBlock` function returns a callback which should be passed to `mod
 
 #### Hot-swapping block styles and block editor filters
 
-This second `variants` argument can be used when your block sets up JS-side [block styles](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/) or [filter hooks](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/) on initialization, to avoid double-registering styles or filters when re-registering the new version of the block. For example,
+This second `variants` argument can be used when your block sets up JS-side [block styles](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/), [filter hooks](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/), or [block variations](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/) on initialization to avoid double-registering styles or filters when re-registering the new version of the block and its variants after a hot reload. For example,
 
 ```js
 // This is the bottom of index.js, after the normal block registration
 // boilerplate as shown in the example above.
 
-// This block declares several style variations. We need to unhook each one
-// before registering the new version of the block.
+// This block declares several block styles and block variations. We need to
+// unhook each one before registering the new versions on reload.
 const styles = [
 	{
 		name: 'light',
@@ -85,17 +85,32 @@ const styles = [
 
 styles.forEach( ( style ) => registerBlockStyle( metadata.name, style ) );
 
+const variations = [
+	{
+		name: 'cta',
+		title: __( 'CTA Button', 'textdomain' ),
+		description: __( 'The major call-to-action on the page', 'textdomain' ),
+		attributes: {
+			backgroundColor: 'primary',
+			fontSize: 'large',
+		},
+		isDefault: false,
+	},
+];
+
+variations.forEach( variation ) => registerBlockVariation( metadata.name, variation );
+
 // Block HMR boilerplate.
 if ( module.hot ) {
 	module.hot.accept();
 	const { deregister, refresh } = require( '../../helpers/hot-blocks.js' );
-	// Pass the styles array into `deregister()` to dispose of them correctly.
-	module.hot.dispose( deregister( metadata.name, { styles } ) );
+	// Pass the style and variations arrays when de-registering to dispose of them correctly.
+	module.hot.dispose( deregisterBlock( metadata.name, { styles, variations } ) );
 	refreshEditor( metadata.name, module.hot.data );
 }
 ```
 
-This can also be done with an array of filters, passing an array of objects with `hook` and `namespace` strings to `deregister( metadata.name, { hooks: [ ... ] } )`. Here's an example of how you'd define your filters using a `hooks` array that can be passed to deregister later:
+This can object can also be used to pass an array of filters, defined as an array of objects specifying the hook name, namespace string, and callback function. Here's an example of how you'd define your filters using a `hooks` array that can be passed to `deregisterBlock()` later:
 
 ```js
 const hooks = [

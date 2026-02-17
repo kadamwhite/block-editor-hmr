@@ -1,7 +1,11 @@
 /**
  * Provide helper methods to dynamically reload & reregister blocks in hot-reloading contexts.
  */
-const { unregisterBlockType, unregisterBlockStyle } = window.wp.blocks;
+const {
+	unregisterBlockType,
+	unregisterBlockStyle,
+	unregisterBlockVariation,
+} = window.wp.blocks;
 const { removeFilter } = window.wp.hooks;
 const { dispatch, select } = window.wp.data;
 
@@ -14,7 +18,7 @@ const { dispatch, select } = window.wp.data;
  * The active block will be reselected in the refresh function.
  *
  * @param {string} hotBlockName Name of block being hot-reloaded.
- * @param {object} [variants]   Dictionary of { styles, filters } arrays to optionally unbind.
+ * @param {object} [variants]   Dictionary of { styles, filters, variations } arrays to optionally unbind.
  * @returns {(data: object) => void} Callback for module.hot.dispose() to deregister the specified block.
  */
 export const deregisterBlock = ( hotBlockName, variants = {} ) => ( data ) => {
@@ -31,6 +35,12 @@ export const deregisterBlock = ( hotBlockName, variants = {} ) => ( data ) => {
 	if ( Array.isArray( variants?.filters ) ) {
 		variants.filters.forEach( ( { hook, namespace } ) => {
 			removeFilter( hook, namespace );
+		} );
+	}
+
+	if ( Array.isArray( variants?.variations ) ) {
+		variants.variations.forEach( ( variation ) => {
+			unregisterBlockVariation( hotBlockName, variation.name );
 		} );
 	}
 
