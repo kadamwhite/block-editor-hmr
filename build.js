@@ -9,7 +9,8 @@ exports.refreshEditor = exports.deregisterBlock = void 0;
  */
 const {
   unregisterBlockType,
-  unregisterBlockStyle
+  unregisterBlockStyle,
+  unregisterBlockVariation
 } = window.wp.blocks;
 const {
   removeFilter
@@ -28,11 +29,13 @@ const {
  * The active block will be reselected in the refresh function.
  *
  * @param {string} hotBlockName Name of block being hot-reloaded.
- * @param {object} [variants]   Dictionary of { styles, filters } arrays to optionally unbind.
+ * @param {object} [variants]   Dictionary of { styles, filters, variations } arrays to optionally unbind.
  * @returns {(data: object) => void} Callback for module.hot.dispose() to deregister the specified block.
  */
 const deregisterBlock = (hotBlockName, variants = {}) => data => {
-  unregisterBlockType(hotBlockName);
+  if (hotBlockName && !hotBlockName.startsWith('core/')) {
+    unregisterBlockType(hotBlockName);
+  }
   if (Array.isArray(variants?.styles)) {
     variants.styles.forEach(style => {
       unregisterBlockStyle(hotBlockName, style.name);
@@ -44,6 +47,11 @@ const deregisterBlock = (hotBlockName, variants = {}) => data => {
       namespace
     }) => {
       removeFilter(hook, namespace);
+    });
+  }
+  if (Array.isArray(variants?.variations)) {
+    variants.variations.forEach(variation => {
+      unregisterBlockVariation(hotBlockName, variation.name);
     });
   }
   const selectedBlockId = select('core/block-editor').getSelectedBlockClientId();
