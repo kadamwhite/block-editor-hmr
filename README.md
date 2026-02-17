@@ -119,7 +119,7 @@ If we try to register a block without unregistering it first, the block editor t
 
 ### Can we simplify that boilerplate?
 
-It's possible this could be simplified further, but testing to date indicates that `module.hot.accept` _must_ be called from the entrypoint file within your project, rather than being abstracted within the third-party NPM module.
+It's possible this could be simplified further, but testing to date indicates that `module.hot.accept` must be called _within_ the module file within your project, rather than being abstracted within the third-party NPM module.
 
 ## What if I do not use per-block bundles?
 
