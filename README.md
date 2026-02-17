@@ -51,7 +51,7 @@ if ( module.hot ) {
 	module.hot.accept();
 	const { deregisterBlock, refreshEditor } = require( '../../helpers/hot-blocks.js' );
 	module.hot.dispose( deregister( metadata.name ) );
-	refresh( metadata.name, module.hot.data );
+	refreshEditor( metadata.name, module.hot.data );
 }
 ```
 
@@ -91,7 +91,7 @@ if ( module.hot ) {
 	const { deregister, refresh } = require( '../../helpers/hot-blocks.js' );
 	// Pass the styles array into `deregister()` to dispose of them correctly.
 	module.hot.dispose( deregister( metadata.name, { styles } ) );
-	refresh( metadata.name, module.hot.data );
+	refreshEditor( metadata.name, module.hot.data );
 }
 ```
 
