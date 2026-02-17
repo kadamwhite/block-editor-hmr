@@ -2,7 +2,15 @@
 
 This library aims to make hot-reloading Gutenberg editor blocks & plugins as simple as possible.
 
-## Auto-Loading Blocks
+## What does this solve?
+
+When you run a `--hot` DevServer with [@wordpress/scripts](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/), you may experience errors when a hot update tries to re-register an already-registered block. Removing or changing block registrations can also lead to unexpected errors if a block's editing interface is visible within the Editor area, and hot updates may not immediately be reflected in the editor until a user action prompts a re-render.
+
+This library provides a utility which will deregister outgoing blocks as they hot-reload, allowing the new version to be restored properly. It also manages selection state, so that your selected block is reopened after the editor and any changed blocks are visually refreshed.
+
+## Hot-Reloading Boilerplate
+
+To use this library, a small snippet of code is required in the file where you register your custom block.
 
 Assuming your blocks are stored in a folder organized like this:
 
