@@ -18,7 +18,9 @@ const { dispatch, select } = window.wp.data;
  * @returns {(data: object) => void} Callback for module.hot.dispose() to deregister the specified block.
  */
 export const deregisterBlock = ( hotBlockName, variants = {} ) => ( data ) => {
-	unregisterBlockType( hotBlockName );
+	if ( hotBlockName && ! hotBlockName.startsWith( 'core/' ) ) {
+		unregisterBlockType( hotBlockName );
+	}
 
 	if ( Array.isArray( variants?.styles ) ) {
 		variants.styles.forEach( ( style ) => {
