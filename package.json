@@ -10,6 +10,8 @@
   },
   "keywords": [
     "webpack",
+    "wordpress",
+    "gutenberg",
     "hmr"
   ],
   "author": "K Adam White",
